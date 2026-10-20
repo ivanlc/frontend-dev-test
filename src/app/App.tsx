@@ -1,13 +1,5 @@
 import { Link, Route, Routes, useParams } from 'react-router-dom'
-
-function ProductListPlaceholder() {
-  return (
-    <main>
-      <h1>Catálogo de productos</h1>
-      <p>El listado de dispositivos se implementará en el siguiente hito.</p>
-    </main>
-  )
-}
+import { ProductListPage } from '../features/catalog/ProductListPage'
 
 function ProductDetailPlaceholder() {
   const { id } = useParams()
@@ -39,7 +31,7 @@ export function App() {
         </Link>
       </header>
       <Routes>
-        <Route path="/" element={<ProductListPlaceholder />} />
+        <Route path="/" element={<ProductListPage />} />
         <Route path="/product/:id" element={<ProductDetailPlaceholder />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

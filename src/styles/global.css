@@ -1,0 +1,35 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #172136;
+  background: #f7f8fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: #174aa1;
+}
+
+.site-header {
+  padding: 1rem max(1rem, calc((100vw - 72rem) / 2));
+  background: #fff;
+  border-bottom: 1px solid #d9dfeb;
+}
+
+.site-title {
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+main {
+  width: min(72rem, calc(100% - 2rem));
+  margin: 2rem auto;
+}

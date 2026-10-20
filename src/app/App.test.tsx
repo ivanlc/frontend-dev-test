@@ -30,4 +30,23 @@ describe('App', () => {
       '/',
     )
   })
+
+  it('shows a 404 state for an unknown route', () => {
+    const queryClient = new QueryClient()
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={['/unknown']}>
+          <CartCountProvider>
+            <App />
+          </CartCountProvider>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    )
+
+    expect(screen.getByRole('heading', { name: 'Página no encontrada' }))
+      .toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ir al catálogo' }))
+      .toHaveAttribute('href', '/')
+  })
 })

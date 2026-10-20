@@ -43,7 +43,7 @@ function renderDetail() {
     defaultOptions: { queries: { retry: false, gcTime: Infinity } },
   })
 
-  return render(
+  const view = render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={['/product/sku-1']}>
         <CartCountProvider>
@@ -52,6 +52,7 @@ function renderDetail() {
       </MemoryRouter>
     </QueryClientProvider>,
   )
+  return { ...view, queryClient }
 }
 
 describe('ProductDetailPage', () => {
@@ -157,5 +158,50 @@ describe('ProductDetailPage', () => {
 
     expect(await screen.findByRole('heading', { name: 'Producto no encontrado' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '← Volver al catálogo' })).toHaveAttribute('href', '/')
+  })
+
+  it('offers a retry when the detail GET fails', async () => {
+    vi.mocked(getProduct)
+      .mockRejectedValueOnce(new Error('Network unavailable'))
+      .mockResolvedValueOnce(product)
+    const user = userEvent.setup()
+    renderDetail()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No pudimos cargar el producto',
+    )
+    await user.click(screen.getByRole('button', { name: 'Reintentar' }))
+    expect(await screen.findByRole('heading', { name: 'Acer Liquid Jade 2' }))
+      .toBeInTheDocument()
+  })
+
+  it('uses a valid variant if revalidated options replace the selection', async () => {
+    vi.mocked(getProduct).mockResolvedValue(product)
+    vi.mocked(addToCart).mockResolvedValue({ count: 1 })
+    const user = userEvent.setup()
+    const { queryClient } = renderDetail()
+
+    await screen.findByRole('heading', { name: 'Acer Liquid Jade 2' })
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Almacenamiento' }),
+      '2001',
+    )
+    queryClient.setQueryData(['product', 'sku-1'], {
+      ...product,
+      options: {
+        colors: [{ code: 1001, name: 'White' }],
+        storages: [{ code: 2002, name: '64 GB' }],
+      },
+    })
+
+    expect(await screen.findByRole('combobox', { name: 'Almacenamiento' }))
+      .toHaveValue('2002')
+    expect(screen.getByRole('combobox', { name: 'Color' })).toHaveValue('1001')
+    await user.click(screen.getByRole('button', { name: 'Añadir a la cesta' }))
+    expect(vi.mocked(addToCart).mock.calls[0][0]).toEqual({
+      id: 'sku-1',
+      colorCode: 1001,
+      storageCode: 2002,
+    })
   })
 })

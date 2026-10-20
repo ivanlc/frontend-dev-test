@@ -158,6 +158,10 @@
   color: #8d3215;
 }
 
+.refreshing {
+  color: #52627a;
+}
+
 .success {
   color: #23653e;
   font-weight: 650;

@@ -4,7 +4,7 @@ SPA de React para explorar dispositivos móviles y añadir variantes al carrito.
 
 ## Estado
 
-Hito 3: catálogo y detalle conectados al API, variantes seleccionables y contador compartido de la cesta. La interfaz tiene dos vistas principales: lista y detalle.
+Hito 4: catálogo y detalle conectados a la API, variantes seleccionables y contador compartido de la cesta. La interfaz tiene dos vistas principales: lista y detalle, más estados de error y 404.
 
 ## Requisitos y ejecución
 
@@ -25,9 +25,9 @@ La API usa por defecto `https://itx-frontend-test.onrender.com`. Para cambiarla,
 - La búsqueda filtra en memoria los productos ya obtenidos, comparando marca o modelo sin distinguir mayúsculas. Las tarjetas enlazan al detalle y muestran «Precio no disponible» cuando el API devuelve una cadena vacía.
 - El detalle muestra los datos de pantalla del proveedor juntos, sin deducir cuál de `displayResolution` o `displaySize` representa cada medida. Los selectores de color y almacenamiento muestran incluso una opción única y eligen la primera disponible por defecto. Si falta alguna opción, el botón de añadir queda deshabilitado.
 - `src/api` centraliza el acceso HTTP. Los tipos conservan los nombres de la API, incluso `dimentions` y `secondaryCmera`. Los IDs y precios son cadenas; un precio vacío no se convierte en uno inventado.
-- TanStack Query almacenará únicamente respuestas GET en memoria. Cada respuesta exitosa se considera fresca durante una hora (`staleTime`). Después de una hora inactiva se descarta (`gcTime`). Mientras una consulta permanezca activa, se intenta revalidar cada hora; al volver a montarla, enfocar la pestaña o recuperar conexión, se revalida si está vencida. Recargar la página vacía esta caché y realiza un nuevo GET. La expiración y sus disparadores tendrán pruebas con reloj simulado en el hito 4.
+- TanStack Query guarda únicamente respuestas GET en memoria, por clave: catálogo y cada producto. Una respuesta exitosa es fresca durante una hora desde que se recibió (`staleTime`); una lectura durante ese plazo reutiliza el dato. Al vencer, un nuevo acceso hace otro GET. Una consulta abierta intenta revalidarse cada hora (`refetchInterval`); al volver a montarla, enfocar la pestaña o recuperar conexión también se revalida si está vencida. Si el GET de actualización falla, se muestra el dato anterior con un aviso y se vuelve a intentar en el siguiente disparador. Las consultas sin observadores se eliminan tras una hora inactivas (`gcTime`), por lo que ese plazo de retención puede terminar después de la hora de frescura; el dato vencido nunca se considera fresco. Recargar la página vacía esta caché y realiza un nuevo GET. Los límites de frescura y la revalidación de una consulta activa se comprueban con reloj simulado.
 - `POST /api/cart` es una mutación: envía únicamente `id`, `colorCode` y `storageCode`. Tras una respuesta exitosa, la cabecera usa el `count` devuelto y lo guarda en `localStorage`; no incrementa el número de forma optimista. Ese valor restaurado es local y puede no reflejar el estado de otra sesión.
 
 ## Limitaciones actuales
 
-El POST del carrito se ha probado con respuestas simuladas y todavía no se ha enviado una petición real durante el desarrollo. La aplicación muestra el contador, no el contenido de la cesta ni un checkout. La API alojada en Render puede tardar en responder durante su arranque.
+El POST del carrito se ha probado con respuestas simuladas y todavía no se ha enviado una petición real durante el desarrollo; su comportamiento frente al servicio real sigue pendiente de validar. La aplicación muestra el contador, no el contenido de la cesta ni un checkout. La API alojada en Render puede tardar en responder durante su arranque.

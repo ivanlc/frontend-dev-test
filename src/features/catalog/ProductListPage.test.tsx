@@ -83,6 +83,21 @@ describe('ProductListPage', () => {
     expect(screen.getByText('Detalle provisional')).toBeInTheDocument()
   })
 
+  it('opens a product card with the keyboard', async () => {
+    vi.mocked(getProducts).mockResolvedValue(products)
+    const user = userEvent.setup()
+    renderCatalog()
+
+    const link = await screen.findByRole('link', { name: /Acer Liquid Z6/ })
+    await user.tab()
+    expect(screen.getByRole('searchbox', { name: 'Buscar por marca o modelo' }))
+      .toHaveFocus()
+    await user.tab()
+    expect(link).toHaveFocus()
+    await user.keyboard('{Enter}')
+    expect(screen.getByText('Detalle provisional')).toBeInTheDocument()
+  })
+
   it('shows an empty catalog and an empty search result distinctly', async () => {
     vi.mocked(getProducts).mockResolvedValueOnce([]).mockResolvedValueOnce(products)
     const user = userEvent.setup()

@@ -22,19 +22,29 @@ function ProductContent({ product }: { product: ProductDetail }) {
   const [storageCode, setStorageCode] = useState<number | undefined>(
     product.options.storages[0]?.code,
   )
+  const selectedColorCode = product.options.colors.some(({ code }) => code === colorCode)
+    ? colorCode
+    : product.options.colors[0]?.code
+  const selectedStorageCode = product.options.storages.some(({ code }) => code === storageCode)
+    ? storageCode
+    : product.options.storages[0]?.code
   const { updateCount } = useCartCount()
   const addMutation = useMutation({
     mutationFn: addToCart,
     onSuccess: ({ count }) => updateCount(count),
   })
-  const canAdd = colorCode !== undefined && storageCode !== undefined
+  const canAdd = selectedColorCode !== undefined && selectedStorageCode !== undefined
   const productName = `${product.brand} ${product.model}`
 
   function handleAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!canAdd) return
+    if (selectedColorCode === undefined || selectedStorageCode === undefined) return
 
-    addMutation.mutate({ id: product.id, colorCode, storageCode })
+    addMutation.mutate({
+      id: product.id,
+      colorCode: selectedColorCode,
+      storageCode: selectedStorageCode,
+    })
   }
 
   return (
@@ -89,7 +99,7 @@ function ProductContent({ product }: { product: ProductDetail }) {
               <label htmlFor="product-storage">Almacenamiento</label>
               <select
                 id="product-storage"
-                value={storageCode ?? ''}
+                value={selectedStorageCode ?? ''}
                 disabled={product.options.storages.length === 0 || addMutation.isPending}
                 onChange={(event) => {
                   setStorageCode(Number(event.target.value))
@@ -108,7 +118,7 @@ function ProductContent({ product }: { product: ProductDetail }) {
               <label htmlFor="product-color">Color</label>
               <select
                 id="product-color"
-                value={colorCode ?? ''}
+                value={selectedColorCode ?? ''}
                 disabled={product.options.colors.length === 0 || addMutation.isPending}
                 onChange={(event) => {
                   setColorCode(Number(event.target.value))
@@ -148,7 +158,7 @@ function ProductContent({ product }: { product: ProductDetail }) {
 
 export function ProductDetailPage() {
   const { id = '' } = useParams()
-  const { data, isPending, isError, error, refetch } = useQuery({
+  const { data, isPending, isError, isFetching, error, refetch } = useQuery({
     queryKey: ['product', id],
     queryFn: ({ signal }) => getProduct(id, signal),
     enabled: Boolean(id),
@@ -180,6 +190,12 @@ export function ProductDetailPage() {
       {isError && data && (
         <p className={styles.error} role="alert">
           No se pudo actualizar el producto. Se muestran los datos guardados.
+        </p>
+      )}
+
+      {isFetching && data && !isError && (
+        <p className={styles.refreshing} role="status">
+          Actualizando producto…
         </p>
       )}
 

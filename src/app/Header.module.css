@@ -1,0 +1,76 @@
+.header {
+  border-bottom: 1px solid #d9dfeb;
+  background: #fff;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  width: min(72rem, calc(100% - 2rem));
+  min-height: 4rem;
+  margin: 0 auto;
+}
+
+.title {
+  flex: none;
+  color: #172136;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  color: #52627a;
+  font-size: 0.9rem;
+}
+
+.breadcrumbs a {
+  color: #174aa1;
+}
+
+.cartCount {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-left: auto;
+  color: #172136;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.cartCount strong {
+  display: grid;
+  place-items: center;
+  min-width: 1.65rem;
+  height: 1.65rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: #174aa1;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.title:focus-visible,
+.breadcrumbs a:focus-visible {
+  outline: 3px solid #377be6;
+  outline-offset: 3px;
+}
+
+@media (max-width: 38rem) {
+  .inner {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+    padding: 0.75rem 0;
+  }
+
+  .breadcrumbs {
+    order: 3;
+    width: 100%;
+  }
+}

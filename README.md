@@ -6,6 +6,16 @@ SPA de React para explorar dispositivos móviles y añadir variantes al carrito.
 
 Hito 4: catálogo y detalle conectados a la API, variantes seleccionables y contador compartido de la cesta. La interfaz tiene dos vistas principales: lista y detalle, más estados de error y 404.
 
+Validación final realizada el 21 de octubre de 2026:
+
+- `npm ci`: instalación correcta de las 200 dependencias del lockfile.
+- `npm test`: 18 tests aprobados en 5 archivos.
+- `npm run lint`: sin errores ni advertencias.
+- `npm run build`: compilación de TypeScript y Vite correcta.
+- API real: `GET /api/product` respondió HTTP 200 con 100 productos (6 sin precio); `GET /api/product/ZmGrkLRPXOTpxsU4jjAcv` respondió HTTP 200 y ofreció color `1000` y almacenamientos `2000` y `2001`.
+- Única prueba real de `POST /api/cart`: se envió `{ "id": "ZmGrkLRPXOTpxsU4jjAcv", "colorCode": 1000, "storageCode": 2001 }` directamente al endpoint. Respondió HTTP 200, `Content-Type: application/json` y `{ "count": 1 }`. El test de integración del frontend verifica que el contador muestra el `count` recibido y lo persiste en `localStorage` (con una respuesta simulada de `count: 4`); no se efectuó un segundo POST desde la interfaz.
+- Navegador: se comprobó el catálogo con datos reales, el filtrado inmediato por marca y modelo, la navegación lista/detalle, las características y el cambio de almacenamiento de 16 a 32 GB; el único color disponible quedó seleccionado por defecto. La grilla mostró tres columnas a 807 px y el CSS limita la disposición a cuatro columnas, reducidas a tres, dos y una según el ancho. Los estados de carga, error, catálogo vacío, producto sin precio y 404 están cubiertos por los tests automatizados. Los tests con reloj simulado verifican la frescura de una hora y la revalidación de las consultas activas.
+
 ## Requisitos y ejecución
 
 - Node.js 22.13.x, 24.x o 26+ y npm.
@@ -30,4 +40,4 @@ La API usa por defecto `https://itx-frontend-test.onrender.com`. Para cambiarla,
 
 ## Limitaciones actuales
 
-El POST del carrito se ha probado con respuestas simuladas y todavía no se ha enviado una petición real durante el desarrollo; su comportamiento frente al servicio real sigue pendiente de validar. La aplicación muestra el contador, no el contenido de la cesta ni un checkout. La API alojada en Render puede tardar en responder durante su arranque.
+La prueba real del POST se hizo directamente contra la API; el flujo visual de añadir y persistir el contador se comprobó con respuestas simuladas en tests, sin repetir la mutación real desde el navegador. El contador restaurado desde `localStorage` es local y puede no coincidir con el estado del servidor en otra sesión. La aplicación muestra el contador, no el contenido de la cesta ni un checkout. La API alojada en Render puede tardar en responder durante su arranque: el primer GET de esta validación tardó 42,35 s; el GET posterior de detalle tardó 0,17 s.

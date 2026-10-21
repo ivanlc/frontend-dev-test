@@ -57,4 +57,4 @@ npm run lint
 npm run build
 ```
 
-Automated tests cover catalog search and states, navigation, product variants, cart request and counter behavior, and one-hour cache expiry and revalidation. The live cart endpoint accepted a controlled POST; the browser add-to-cart flow is tested with mocked responses rather than a live end-to-end POST.
+Automated tests cover catalog search and states, navigation, product variants, cart request and counter behavior, and one-hour cache expiry and revalidation. The add-to-cart flow was also verified in a browser against the live API through the development proxy.

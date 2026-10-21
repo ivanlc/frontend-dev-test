@@ -8,7 +8,7 @@ Mobile Shop is a client-side React application for browsing mobile devices and a
 
 - React, TypeScript, and Vite
 - React Router for client-side navigation
-- TanStack Query for GET requests and in-memory caching
+- TanStack Query for GET requests and client-side caching
 - CSS Modules for component styles
 - Vitest, React Testing Library, and ESLint
 
@@ -44,7 +44,7 @@ Do not put credentials in this file. A production host must serve `index.html` f
 
 - React Router serves the catalog at `/` and product details at `/product/:id`; unknown routes show a 404 page.
 - `src/api` centralizes HTTP access. Product IDs and prices remain strings, and API field names are preserved as supplied, including `dimentions` and `secondaryCmera`.
-- TanStack Query caches catalog and product-detail GET responses in memory. Data is fresh for one hour; active queries revalidate hourly, and stale queries revalidate when revisited, focused, or reconnected. Reloading the page clears this cache.
+- TanStack Query persists successful catalog and product-detail GET responses in `localStorage` with a one-hour maximum snapshot age. Fresh data is reused after navigation or reload; stale queries revalidate when revisited, focused, or reconnected, and active queries revalidate hourly. If storage is unavailable, in-memory caching still works.
 - Cart additions send `id`, `colorCode`, and `storageCode` as a mutation. The shared counter uses the response `count` and persists it in `localStorage`; it is not incremented optimistically.
 
 The stored count is local to the browser and may differ from the server's state in another session. The application does not show cart contents or provide checkout. The hosted API may respond slowly after an idle period.

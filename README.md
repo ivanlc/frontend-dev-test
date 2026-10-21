@@ -32,13 +32,13 @@ npm run start
 
 Open `http://localhost:5173`. Run `npm run build` for a production build, `npm test` for the test suite, and `npm run lint` for static checks. `npm run dev` is an alias for `start`.
 
-The default API base URL is `https://itx-frontend-test.onrender.com`. To use another API, create a Git-ignored `.env.local` file:
+In development and Vite preview, `/api` is proxied to `https://itx-frontend-test.onrender.com`. This keeps the cart session cookie on the application's origin. A deployed host needs an equivalent reverse proxy; static hosting alone cannot preserve the cart session. If the host proxies the API under another same-origin prefix, set that prefix in a Git-ignored `.env.local` file:
 
 ```dotenv
-VITE_API_BASE_URL=https://example.com
+VITE_API_BASE_URL=/backend
 ```
 
-Do not put credentials in this file. A production host must serve `index.html` for client-side routes.
+This example requires the host to forward `/backend/api` to the upstream `/api`. Do not put credentials in this file. A production host must also serve `index.html` for client-side routes.
 
 ## Architecture
 

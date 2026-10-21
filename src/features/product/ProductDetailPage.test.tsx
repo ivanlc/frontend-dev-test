@@ -136,6 +136,35 @@ describe('ProductDetailPage', () => {
     expect(localStorage.getItem('itx-cart-count')).toBe('2')
   })
 
+  it('shows the cumulative server count across additions and HTTP errors', async () => {
+    vi.mocked(getProduct).mockResolvedValue(product)
+    vi.mocked(addToCart)
+      .mockResolvedValueOnce({ count: 1 })
+      .mockRejectedValueOnce(new ApiError(503, 'Service Unavailable'))
+      .mockResolvedValueOnce({ count: 2 })
+    const user = userEvent.setup()
+    const { unmount } = renderDetail()
+
+    await screen.findByRole('heading', { name: 'Acer Liquid Jade 2' })
+    await user.click(screen.getByRole('button', { name: 'Añadir a la cesta' }))
+    expect(await screen.findByText('1')).toBeInTheDocument()
+    expect(localStorage.getItem('itx-cart-count')).toBe('1')
+
+    await user.click(screen.getByRole('button', { name: 'Añadir a la cesta' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo añadir')
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(localStorage.getItem('itx-cart-count')).toBe('1')
+
+    await user.click(screen.getByRole('button', { name: 'Añadir a la cesta' }))
+    expect(await screen.findByText('2')).toBeInTheDocument()
+    expect(localStorage.getItem('itx-cart-count')).toBe('2')
+    expect(addToCart).toHaveBeenCalledTimes(3)
+
+    unmount()
+    renderDetail()
+    expect(screen.getByText('2')).toBeInTheDocument()
+  })
+
   it('keeps selectors visible and disables adding when an option is missing', async () => {
     vi.mocked(getProduct).mockResolvedValue({
       ...product,

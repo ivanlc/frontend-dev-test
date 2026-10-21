@@ -1,8 +1,4 @@
-const DEFAULT_API_BASE_URL = 'https://itx-frontend-test.onrender.com'
-
-const apiBaseUrl = (
-  import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL
-).replace(/\/$/, '')
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
 
 export class ApiError extends Error {
   constructor(

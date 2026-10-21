@@ -19,7 +19,7 @@ describe('addToCart', () => {
       addToCart({ id: 'sku-1', colorCode: 1000, storageCode: 2001 }),
     ).resolves.toEqual({ count: 3 })
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith(
-      'https://itx-frontend-test.onrender.com/api/cart',
+      '/api/cart',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
